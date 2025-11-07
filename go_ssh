@@ -1,0 +1,114 @@
+#!/usr/bin/env -S uv run -q -s
+
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "argparse",
+#     "rich",
+# ]
+# ///
+
+import argparse
+import os
+import sys
+from enum import Enum
+from rich.console import Console
+from rich.table import Table
+
+
+class PasswordType(Enum):
+    INLINE = 1
+    ENV_VARIABLE = 2
+    PROMPT = 3
+
+
+class HostDefinition:
+    def __init__(
+        self,
+        description: str,
+        hostname: str,
+        username: str,
+        password: str = "",
+        password_type=PasswordType.PROMPT,
+        port: int = 22,
+    ):
+        self.description = description
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.password_type = password_type
+        self.port = port
+
+
+host_definitions = [
+    HostDefinition("u50", "unix50.org", "unix50", "unix50", PasswordType.INLINE)
+]
+
+
+def show_systems():
+    table = Table(title="Remote Systems")
+    table.add_column("Description")
+    table.add_column("Host Name")
+    table.add_column("User")
+
+    for host_definition in host_definitions:
+        table.add_row(
+            host_definition.description,
+            host_definition.hostname,
+            host_definition.username,
+        )
+
+    console = Console()
+    console.print(table)
+
+    sys.exit(0)
+
+
+def launch(description, force_password_prompt=False):
+    for host_definition in host_definitions:
+        if host_definition.description == description:
+            connection_string = f"ssh -p {host_definition.port} {host_definition.username}@{host_definition.hostname}"
+
+            if host_definition.password != "" and not force_password_prompt:
+                working_password = (
+                    host_definition.password
+                    if host_definition.password_type == PasswordType.INLINE
+                    else os.getenv(host_definition.password)
+                )
+                connection_string = f"sshpass -p {working_password} {connection_string}"
+
+            print(f"Connecting to {host_definition.hostname}...")
+            os.system(connection_string)
+            sys.exit(0)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-d",
+        "--description",
+        type=str,
+        help="description of remote system to log into",
+    )
+    parser.add_argument(
+        "-p",
+        "--password",
+        action="store_true",
+        help="force password prompt, e.g., when you need to confirm host authenticity",
+    )
+    parser.add_argument(
+        "-l", "--list", action="store_true", help="show available systems"
+    )
+    args = parser.parse_args()
+
+    if args.list:
+        show_systems()
+    elif args.description:
+        launch(args.description, args.password)
+    else:
+        parser.print_help()
+        sys.exit(-1)
+
+
+if __name__ == "__main__":
+    main()
