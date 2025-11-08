@@ -1,4 +1,5 @@
 go_ssh_live
+.vscode
 
 # Python-generated files
 __pycache__/
