@@ -10,34 +10,27 @@ Helper script for SSH connections.
 
 ## Configuration
 
-Open the script and locate the `host_definitions` assignment statement.  The default looks like this:
+Make a copy of `go_ssh.json`:
 
-```python
-host_definitions = [
-    HostDefinition("u50", "unix50.org", "unix50", "unix50", PasswordType.INLINE)
-]
+```bash
+cp go_ssh.json go_ssh_live.json
 ```
 
-Add a `HostDefinition` initializer with info for each site you want to connect to.  The arguments to the `HostDefinition` constructor are as follows:
+Update `go_ssh_live.json` with entries for all of your host definitions.
 
-Argument | Description | Required?
--------- | ----------- | ---------
-description | Used as the -d argument to indicate which definition to use for connecting. | Yes
-hostname | The remote host name. | Yes
-username | The user name to use when connecting. | Yes
-password | The password to use when connecting. | No (defaults to blank)
-password_type | An enum indicating the format of the password entry. | No (defaults to `PasswordType.PROMPT`)
-port | The port to use when connecting. | No (defaults to 22)
+> The password type can be any of the following:
+>
+> Value | Description
+> ----- | -----------
+> inline | The password field contains the actual password.
+> env_variable | The password field contains the name of an environment value that holds the actual password value.
+> prompt | The user should be prompted to enter a password.
+>
+> Additionally, the `inline` and `env_variable` values can be overridden with the `-p` argument if you want to be prompted.
 
-The password type can be any of the following:
+Deploy live script with `make deploy`.
 
-Value | Description
------ | -----------
-PasswordType.INLINE | The password field contains the actual password.
-PasswordType.ENV_VARIABLE | The password field contains the name of an environment value that holds the actual password value.
-PasswordType.PROMPT | The user should be prompted to enter a password.
-
-Additionally, the INLINE and ENV_VARIABLE values can be overridden with the `-p` argument if you want to be prompted.
+## Usage
 
 The script accepts the following arguments:
 

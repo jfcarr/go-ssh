@@ -9,11 +9,15 @@
 # ///
 
 import argparse
+import json
 import os
 import sys
 from enum import Enum
+
 from rich.console import Console
 from rich.table import Table
+
+host_definitions = []
 
 
 class PasswordType(Enum):
@@ -40,9 +44,35 @@ class HostDefinition:
         self.port = port
 
 
-host_definitions = [
-    HostDefinition("u50", "unix50.org", "unix50", "unix50", PasswordType.INLINE)
-]
+def load_host_definitions():
+    global host_definitions
+
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "go_ssh.json")
+
+    with open(file_path, "r") as file:
+        json_data = json.load(file)
+
+    for host_definition in json_data["hostdefinitions"]:
+        password_type = PasswordType.PROMPT
+
+        match host_definition["passwordtype"]:
+            case "inline":
+                password_type = PasswordType.INLINE
+            case "env_variable":
+                password_type = PasswordType.ENV_VARIABLE
+            case "prompt":
+                password_type = PasswordType.PROMPT
+
+        host_definitions.append(
+            HostDefinition(
+                host_definition["description"],
+                host_definition["hostname"],
+                host_definition["username"],
+                host_definition["password"],
+                password_type,
+                host_definition["port"],
+            )
+        )
 
 
 def show_systems():
@@ -111,6 +141,8 @@ def main():
         "-l", "--list", action="store_true", help="show available systems"
     )
     args = parser.parse_args()
+
+    load_host_definitions()
 
     if args.list:
         show_systems()

@@ -1,0 +1,15 @@
+{
+    "hostdefinitions": [
+        {
+            "description": "u50",
+            "hostname": "unix50.org",
+            "username": "unix50",
+            "password": "unix50",
+            "passwordtype": "inline",
+            "port": 22
+        }
+    ],
+    "help": {
+        "valid_password_types": "inline, env_variable, prompt"
+    }
+}
