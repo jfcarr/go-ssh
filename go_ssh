@@ -50,12 +50,23 @@ def show_systems():
     table.add_column("Description")
     table.add_column("Host Name")
     table.add_column("User")
+    table.add_column("Password")
 
     for host_definition in host_definitions:
+        password_display = ""
+        match host_definition.password_type:
+            case PasswordType.ENV_VARIABLE:
+                password_display = f"Environment variable: {host_definition.password}"
+            case PasswordType.INLINE:
+                password_display = "Automatic"
+            case PasswordType.PROMPT:
+                password_display = "Prompt"
+
         table.add_row(
             host_definition.description,
             host_definition.hostname,
             host_definition.username,
+            password_display,
         )
 
     console = Console()
