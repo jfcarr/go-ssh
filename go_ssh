@@ -30,6 +30,7 @@ class HostDefinition:
     def __init__(
         self,
         description: str,
+        type: str,
         hostname: str,
         username: str,
         password: str = "",
@@ -37,6 +38,7 @@ class HostDefinition:
         port: int = 22,
     ):
         self.description = description
+        self.type = type
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -66,6 +68,7 @@ def load_host_definitions():
         host_definitions.append(
             HostDefinition(
                 host_definition["description"],
+                host_definition["type"],
                 host_definition["hostname"],
                 host_definition["username"],
                 host_definition["password"],
@@ -78,6 +81,7 @@ def load_host_definitions():
 def show_systems():
     table = Table(title="Remote Systems")
     table.add_column("Description")
+    table.add_column("Type")
     table.add_column("Host Name")
     table.add_column("User")
     table.add_column("Password")
@@ -94,6 +98,7 @@ def show_systems():
 
         table.add_row(
             host_definition.description,
+            host_definition.type,
             host_definition.hostname,
             host_definition.username,
             password_display,
@@ -105,10 +110,18 @@ def show_systems():
     sys.exit(0)
 
 
-def launch(description, force_password_prompt=False):
+def launch(description, type="ssh", force_password_prompt=False):
     for host_definition in host_definitions:
-        if host_definition.description == description:
-            connection_string = f"ssh -p {host_definition.port} {host_definition.username}@{host_definition.hostname}"
+        if host_definition.description == description and host_definition.type == type:
+            match type:
+                case "ssh":
+                    command = f"ssh -p {host_definition.port}"
+                case "sftp":
+                    command = f"sftp -P {host_definition.port}"
+
+            connection_string = (
+                f"{command} {host_definition.username}@{host_definition.hostname}"
+            )
 
             if host_definition.password != "" and not force_password_prompt:
                 working_password = (
@@ -132,6 +145,13 @@ def main():
         help="description of remote system to log into",
     )
     parser.add_argument(
+        "-t",
+        "--type",
+        type=str,
+        default="ssh",
+        help="connection type, can be 'ssh', or 'sftp', defaults to 'ssh'",
+    )
+    parser.add_argument(
         "-p",
         "--password",
         action="store_true",
@@ -147,7 +167,14 @@ def main():
     if args.list:
         show_systems()
     elif args.description:
-        launch(args.description, args.password)
+        match args.type:
+            case "ssh" | "sftp":
+                type = args.type
+            case _:
+                print(f"unknown type {args.type}, defaulting to 'ssh'")
+                type = "ssh"
+
+        launch(args.description, type, args.password)
     else:
         parser.print_help()
         sys.exit(-1)

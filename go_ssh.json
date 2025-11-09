@@ -2,6 +2,16 @@
     "hostdefinitions": [
         {
             "description": "u50",
+            "type": "ssh",
+            "hostname": "unix50.org",
+            "username": "unix50",
+            "password": "unix50",
+            "passwordtype": "inline",
+            "port": 22
+        },
+        {
+            "description": "u50",
+            "type": "sftp",
             "hostname": "unix50.org",
             "username": "unix50",
             "password": "unix50",
@@ -10,6 +20,7 @@
         }
     ],
     "help": {
+        "valid_connection_types": "ssh, sftp",
         "valid_password_types": "inline, env_variable, prompt"
     }
 }

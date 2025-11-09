@@ -10,25 +10,32 @@ Helper script for SSH connections.
 
 ## Configuration
 
-Make a copy of `go_ssh.json`:
+1. Make a copy of `go_ssh.json`:
 
 ```bash
 cp go_ssh.json go_ssh_live.json
 ```
 
-Update `go_ssh_live.json` with entries for all of your host definitions.
+2. Update `go_ssh_live.json` with entries for all of your host definitions.
 
-> The password type can be any of the following:
->
-> Value | Description
-> ----- | -----------
-> inline | The password field contains the actual password.
-> env_variable | The password field contains the name of an environment value that holds the actual password value.
-> prompt | The user should be prompted to enter a password.
->
-> Additionally, the `inline` and `env_variable` values can be overridden with the `-p` argument if you want to be prompted.
+The type (connection type) can any of the following:
 
-Deploy live script with `make deploy`.
+Value | Description
+----- | -----------
+ssh | Connect using ssh.
+sftp | Connect using sftp.
+
+The password type can be any of the following:
+
+Value | Description
+----- | -----------
+inline | The password field contains the actual password.
+env_variable | The password field contains the name of an environment value that holds the actual password value.
+prompt | The user should be prompted to enter a password.
+
+Additionally, the `inline` and `env_variable` values can be overridden with the `-p` argument if you want to be prompted.
+
+3. Deploy live script with `make deploy`.
 
 ## Usage
 
@@ -37,10 +44,11 @@ The script accepts the following arguments:
 Argument | Description
 -------- | -----------
 -d DESCRIPTION, --description DESCRIPTION | Connect using the host definition that matches DESCRIPTION
+-t TYPE, --type TYPE | Connection type, 'ssh' or 'sftp'.  Optional: defaults to 'ssh'.
 -p, --password | Prompt the user for a password, regardless of the password type.
 -l, --list | Display a list of all host definition entries.
 
-For example, to connect using the "u50" host definition, you'd invoke the script as follows:
+For example, to connect as ssh, using the "u50" host definition, you'd invoke the script as follows:
 
 ```bash
 go_ssh -d u50
