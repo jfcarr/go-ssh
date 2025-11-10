@@ -57,13 +57,14 @@ def load_host_definitions():
     for host_definition in json_data["hostdefinitions"]:
         password_type = PasswordType.PROMPT
 
-        match host_definition["passwordtype"]:
-            case "inline":
-                password_type = PasswordType.INLINE
-            case "env_variable":
-                password_type = PasswordType.ENV_VARIABLE
-            case "prompt":
-                password_type = PasswordType.PROMPT
+        if "passwordtype" in host_definition:
+            match host_definition["passwordtype"]:
+                case "inline":
+                    password_type = PasswordType.INLINE
+                case "env_variable":
+                    password_type = PasswordType.ENV_VARIABLE
+                case "prompt":
+                    password_type = PasswordType.PROMPT
 
         host_definitions.append(
             HostDefinition(
@@ -71,9 +72,9 @@ def load_host_definitions():
                 host_definition["type"],
                 host_definition["hostname"],
                 host_definition["username"],
-                host_definition["password"],
+                host_definition["password"] if "password" in host_definition else "",
                 password_type,
-                host_definition["port"],
+                host_definition["port"] if "port" in host_definition else 22,
             )
         )
 

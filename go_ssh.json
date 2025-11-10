@@ -21,6 +21,13 @@
     ],
     "help": {
         "valid_connection_types": "ssh, sftp",
-        "valid_password_types": "inline, env_variable, prompt"
+        "valid_password_types": "inline, env_variable, prompt",
+        "default_values": [
+            {
+                "password": "",
+                "passwordtype": "prompt",
+                "port": 22
+            }
+        ]
     }
 }
