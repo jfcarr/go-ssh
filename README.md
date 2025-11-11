@@ -43,7 +43,7 @@ The script accepts the following arguments:
 
 Argument | Description
 -------- | -----------
--d DESCRIPTION, --description DESCRIPTION | Connect using the host definition that matches DESCRIPTION
+-i ID, --id ID | Connect using the host definition that matches ID
 -t TYPE, --type TYPE | Connection type, 'ssh' or 'sftp'.  Optional: defaults to 'ssh'.
 -p, --password | Prompt the user for a password, regardless of the password type.
 -l, --list | Display a list of all host definition entries.
@@ -51,7 +51,7 @@ Argument | Description
 For example, to connect as ssh, using the "u50" host definition, you'd invoke the script as follows:
 
 ```bash
-go_ssh -d u50
+go_ssh -i u50
 ```
 
 The script will then construct and execute a call to `ssh` that looks like this:

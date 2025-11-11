@@ -1,7 +1,7 @@
 {
     "hostdefinitions": [
         {
-            "description": "u50",
+            "id": "u50",
             "type": "ssh",
             "hostname": "unix50.org",
             "username": "unix50",
@@ -10,7 +10,7 @@
             "port": 22
         },
         {
-            "description": "u50",
+            "id": "u50",
             "type": "sftp",
             "hostname": "unix50.org",
             "username": "unix50",

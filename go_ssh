@@ -29,7 +29,7 @@ class PasswordType(Enum):
 class HostDefinition:
     def __init__(
         self,
-        description: str,
+        id: str,
         type: str,
         hostname: str,
         username: str,
@@ -37,7 +37,7 @@ class HostDefinition:
         password_type=PasswordType.PROMPT,
         port: int = 22,
     ):
-        self.description = description
+        self.id = id
         self.type = type
         self.hostname = hostname
         self.username = username
@@ -68,7 +68,7 @@ def load_host_definitions():
 
         host_definitions.append(
             HostDefinition(
-                host_definition["description"],
+                host_definition["id"],
                 host_definition["type"],
                 host_definition["hostname"],
                 host_definition["username"],
@@ -81,7 +81,7 @@ def load_host_definitions():
 
 def show_systems():
     table = Table(title="Remote Systems")
-    table.add_column("Description")
+    table.add_column("ID")
     table.add_column("Type")
     table.add_column("Host Name")
     table.add_column("User")
@@ -98,7 +98,7 @@ def show_systems():
                 password_display = "Prompt"
 
         table.add_row(
-            host_definition.description,
+            host_definition.id,
             host_definition.type,
             host_definition.hostname,
             host_definition.username,
@@ -111,9 +111,9 @@ def show_systems():
     sys.exit(0)
 
 
-def launch(description, type="ssh", force_password_prompt=False):
+def launch(id, type="ssh", force_password_prompt=False):
     for host_definition in host_definitions:
-        if host_definition.description == description and host_definition.type == type:
+        if host_definition.id == id and host_definition.type == type:
             match type:
                 case "ssh":
                     command = f"ssh -p {host_definition.port}"
@@ -140,10 +140,10 @@ def launch(description, type="ssh", force_password_prompt=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-d",
-        "--description",
+        "-i",
+        "--id",
         type=str,
-        help="description of remote system to log into",
+        help="identifier of remote system to log into",
     )
     parser.add_argument(
         "-t",
@@ -167,7 +167,7 @@ def main():
 
     if args.list:
         show_systems()
-    elif args.description:
+    elif args.id:
         match args.type:
             case "ssh" | "sftp":
                 type = args.type
@@ -175,7 +175,7 @@ def main():
                 print(f"unknown type {args.type}, defaulting to 'ssh'")
                 type = "ssh"
 
-        launch(args.description, type, args.password)
+        launch(args.id, type, args.password)
     else:
         parser.print_help()
         sys.exit(-1)
